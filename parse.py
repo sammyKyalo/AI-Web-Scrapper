@@ -9,7 +9,7 @@ import time
 model = ChatGroq(
     model="llama-3.1-8b-instant",
     temperature=0,
-    api_key = os.getenv("GROQ_API_KEY")
+    api_key = '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'
     )
 
 
