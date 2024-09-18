@@ -1,13 +1,18 @@
 import selenium.webdriver as webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 import time
 from bs4 import BeautifulSoup
+from webdriver_manager.chrome import ChromeDriverManager
 
 def scrape_website(website):
     print("Launching chrome browser...")
 
-    chrome_driver_path = "./chromedriver.exe"
-    options = webdriver.ChromeOptions()
+    chrome_driver_path = ChromeDriverManager().install()  # Automatically manage Chromedriver
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(service=Service(chrome_driver_path), options=options)
 
     try:
@@ -15,11 +20,12 @@ def scrape_website(website):
         print("Page loaded...")
         html = driver.page_source
         time.sleep(10)
-
         return html
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return ""
     finally:
         driver.quit()
-
 
 def extract_body_content(html_content):
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -42,10 +48,7 @@ def clean_body_content(body_content):
 
     return cleaned_content
 
-
 def split_dom_content(dom_content, max_length=6000):
     return [
         dom_content[i: i + max_length] for i in range(0, len(dom_content), max_length)
     ]
-
-
